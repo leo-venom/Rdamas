@@ -118,6 +118,8 @@ const UI = {
         document.body.appendChild(clone);
 
         Audio.play('move');
+        // Esconde peça original para não reaparecer enquanto clone se move
+        pieceEl.style.opacity = '0';
         // Percorre o path (cada passo do movimento)
         const pathSteps = move.path || [{from: move.from, to: move.to}];
         pathSteps.forEach((step, idx) => {
@@ -132,9 +134,10 @@ const UI = {
           }, idx * 220);
         });
 
-        // Finaliza após todos os passos
+        // Finaliza após todos os passos — restaura opacidade antes de renderizar
         setTimeout(() => {
           clone.remove();
+          pieceEl.style.opacity = '1';
           if (move.captured) {
             const capCell = boardEl?.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
             const capPiece = capCell?.querySelector('.piece');
