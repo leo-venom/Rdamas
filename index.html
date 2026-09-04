@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e14">
+  <title>RDAMAS — Jogo de Damas Glass vs IA</title>
+  <meta name="description" content="RDAMAS: jogo de damas dark glass com IA em 3 níveis, multiplayer local, conquistas e placar.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00ffaa"/>
+              <stop offset="100%" stop-color="#00b8d4"/>
+            </linearGradient>
+            <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ff007f"/>
+              <stop offset="100%" stop-color="#c2185b"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="30" fill="#0a0e14" stroke="url(#cg)" stroke-width="2.5"/>
+          <circle cx="22" cy="28" r="7" fill="url(#cg)" opacity="0.95"/>
+          <circle cx="42" cy="28" r="7" fill="url(#mg)" opacity="0.95"/>
+          <circle cx="22" cy="44" r="7" fill="url(#mg)" opacity="0.95"/>
+          <circle cx="42" cy="44" r="7" fill="url(#cg)" opacity="0.95"/>
+        </svg>
+        <div>
+          <h1 class="brand-name">RDAMAS</h1>
+          <div class="brand-sub">Glass · vs IA · Multiplayer</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-sound" title="Som" aria-label="Som">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-info" title="Regras" aria-label="Regras">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- TURN BADGE & SCORE -->
+    <section class="info-bar">
+      <div id="turnBadge" class="turn-badge turn-cyan">
+        <span class="turn-dot"></span>
+        <span class="turn-text">Sua vez (Cyan)</span>
+      </div>
+      <div class="score-board">
+        <div class="score-item">
+          <div class="dot dot-cyan"></div>
+          <span>Cyan <strong id="cyanCount">12</strong></span>
+        </div>
+        <div class="score-divider">·</div>
+        <div class="score-item">
+          <div class="dot dot-magenta"></div>
+          <span>Mag <strong id="magentaCount">12</strong></span>
+        </div>
+        <div class="score-divider">·</div>
+        <div class="score-item">
+          <span>🏆 <strong id="winsCount">0</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPTURED PIECES -->
+    <section class="captured-row">
+      <div class="captured captured-cyan" id="captured-cyan">
+        <span class="captured-label">Suas perdas:</span>
+        <div class="captured-pieces" id="lost-cyan"></div>
+      </div>
+      <div class="captured captured-magenta" id="captured-magenta">
+        <span class="captured-label">Perdidas pela IA:</span>
+        <div class="captured-pieces" id="lost-magenta"></div>
+      </div>
+    </section>
+
+    <!-- BOARD -->
+    <div id="board" class="board" role="grid" aria-label="Tabuleiro de Damas 8x8"></div>
+
+    <!-- AI THINKING -->
+    <div id="aiThink" class="ai-think hidden">
+      <div class="ai-dots"><span></span><span></span><span></span></div>
+      <span class="ai-text">Pensando<span class="dots-anim">…</span></span>
+    </div>
+
+    <!-- CONTROLS -->
+    <section class="controls">
+      <div class="control-row">
+        <div class="select-wrapper">
+          <label for="mode">Modo</label>
+          <select id="mode" class="glass-select">
+            <option value="ai">vs IA</option>
+            <option value="local">2 jogadores local</option>
+          </select>
+        </div>
+        <div class="select-wrapper" id="difficulty-wrap">
+          <label for="difficulty">Dificuldade</label>
+          <select id="difficulty" class="glass-select">
+            <option value="easy">Fácil</option>
+            <option value="medium" selected>Médio</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </div>
+      </div>
+      <div class="control-row">
+        <button class="glass-btn primary" id="btn-undo" title="Desfazer jogada">↶ Desfazer</button>
+        <button class="glass-btn" id="btn-redo" title="Refazer jogada">↷ Refazer</button>
+        <button class="glass-btn" id="btn-reset">↻ Reiniciar</button>
+      </div>
+    </section>
+
+    <!-- ACHIEVEMENTS PREVIEW -->
+    <section class="achievements">
+      <div class="ach-title">
+        <span>🏅 Conquistas</span>
+        <span class="ach-progress"><span id="achUnlocked">0</span>/<span id="achTotal">0</span></span>
+      </div>
+      <div class="ach-grid" id="achGrid"></div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="history">
+      <details>
+        <summary>📜 Histórico de jogadas <span id="moveCount">(0)</span></summary>
+        <ol id="moveList" class="move-list"></ol>
+      </details>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div>RDAMAS · Glass Edition · v1.0</div>
+      <div class="install-row">
+        <button class="glass-btn small hidden" id="btn-install">📲 Instalar App</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL: RULES -->
+  <div id="modalRules" class="modal hidden">
+    <div class="modal-card">
+      <h2>📖 Regras & Atalhos</h2>
+      <ul class="rules">
+        <li>♟️ Damas tradicionais: 8x8, peças andam 1 casa na diagonal</li>
+        <li>👑 Ao chegar no fim vira <strong>Dama (★)</strong> — anda quantas quiser</li>
+        <li>⚔️ Captura é <strong>obrigatória</strong> quando possível</li>
+        <li>🔗 Captura múltipla: continua enquanto houver capturas</li>
+        <li>🏆 Quem perder todas as peças, perde</li>
+      </ul>
+      <h3>⌨️ Atalhos</h3>
+      <ul class="rules">
+        <li><kbd>Z</kbd> Desfazer · <kbd>Y</kbd> Refazer</li>
+        <li><kbd>N</kbd> Novo jogo · <kbd>M</kbd> Trocar modo</li>
+        <li><kbd>M</kbd> (clique) ou 🔊 Mudo/Som</li>
+      </ul>
+      <button class="glass-btn primary" id="btn-close-rules">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: WIN -->
+  <div id="modalWin" class="modal hidden">
+    <div class="modal-card celebration">
+      <div id="winEmoji" class="win-emoji">🏆</div>
+      <h2 id="winTitle">Parabéns!</h2>
+      <p id="winSubtitle">Você venceu a IA.</p>
+      <div class="win-stats" id="winStats"></div>
+      <div class="win-actions">
+        <button class="glass-btn primary" id="btn-win-again">Jogar de novo</button>
+        <button class="glass-btn" id="btn-win-share">📤 Compartilhar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
