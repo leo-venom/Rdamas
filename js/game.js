@@ -258,7 +258,10 @@ const Game = {
     const s = this.state;
     if (!s.mustContinue) return { type: 'none' };
     const move = s.validMoves.find(m => m.to.r === toR && m.to.c === toC);
-    if (move) return { type: 'move', move: this._executeMove(move) };
+    if (move) {
+      const result = this._executeMove(move);
+      return { type: 'move', move: move, result: result };
+    }
     return { type: 'none' };
   },
 

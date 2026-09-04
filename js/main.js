@@ -179,7 +179,7 @@ const Main = {
         this._applyAiMultiPath(move);
       } else {
         const result = Game._executeMove(move);
-        result.move = move;  // <-- passa o move junto pra UI._afterMove
+        result.move = move;
         UI._afterMove(result);
       }
     }, 600);
@@ -208,7 +208,7 @@ const Main = {
         path: [step],
       };
       const result = Game._executeMove(stepMove);
-      result.move = stepMove;  // <-- passa o move pra UI
+      result.move = stepMove;
       // Animação
       if (stepMove.captured) {
         const capCell = UI.els.board.querySelector(`[data-r="${stepMove.captured.r}"][data-c="${stepMove.captured.c}"]`);

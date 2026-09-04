@@ -81,12 +81,12 @@ const UI = {
     if (Game.isAiTurn()) return;
     if (s.mustContinue) {
       const res = Game.continueCapture(r, c);
-      if (res.type === 'move') this._afterMove(res.move);
+      if (res.type === 'move') this._afterMove(res.result);
       return;
     }
     const res = Game.clickCell(r, c);
     if (res.type === 'move') {
-      this._afterMove(res.move);
+      this._afterMove(res.result);
     } else if (res.type === 'select' || res.type === 'deselect') {
       Audio.play(res.type === 'select' ? 'select' : 'move');
       this.render();
