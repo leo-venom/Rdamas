@@ -190,8 +190,8 @@ h1, h2, h3, .brand-name, .turn-badge, .glass-btn, .ach-title, .score-item, .moda
 .cell.light { background: rgba(20, 30, 42, 0.55); }
 .cell.dark { background: rgba(4, 8, 14, 0.85); }
 .cell:active { filter: brightness(1.2); }
-.cell.last-move-light { box-shadow: inset 0 0 0 2px rgba(0, 255, 170, 0.6); }
-.cell.last-move-dark { box-shadow: inset 0 0 0 2px rgba(255, 0, 127, 0.6); }
+.cell.last-move-light { box-shadow: none; }
+.cell.last-move-dark { box-shadow: none; }
 
 /* Highlight (valid moves) */
 /* Highlight removido — retângulo de jogadas válidas removido por Leo */
