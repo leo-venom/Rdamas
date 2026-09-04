@@ -23,6 +23,8 @@ const UI = {
   render() {
     const s = Game.state;
     if (!s) return;
+    // Indicador de captura obrigatória
+    this._renderMandatoryCapture(s);
     this._renderBoard(s);
     this._renderInfo(s);
     this._renderCaptured(s);
@@ -98,7 +100,14 @@ const UI = {
     const move = result.move;
     if (!move) return;
 
-    // Captura: peça capturada explodir; movimento simples
+    // Se é multi-captura (path com mais de 1 passo), anima todas as capturas no path
+    if (move.path && move.path.length > 1 && move.captured) {
+      Audio.play('capture');
+      setTimeout(() => this._applyAndContinue(result), 350);
+      return;
+    }
+
+    // Captura simples
     if (move.captured) {
       const capCell = this.els.board?.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
       const capPiece = capCell?.querySelector('.piece');
@@ -181,6 +190,30 @@ const UI = {
       Array(lostCyan).fill(0).map(() => '<div class="mini-piece cyan"></div>').join('');
     this.els.lostMagenta.innerHTML = '<span class="captured-label">Perdidas pela IA:</span>' +
       Array(lostMag).fill(0).map(() => '<div class="mini-piece magenta"></div>').join('');
+  },
+
+  _renderMandatoryCapture(s) {
+    if (!this.els.board) return;
+    const allCells = this.els.board.querySelectorAll('.cell');
+    // Limpa indicadores anteriores
+    allCells.forEach(c => c.classList.remove('mandatory-capture'));
+    // Se há captura obrigatória no turno atual
+    if (s.turn) {
+      const mustCapture = Game._anyCapturesAvailable ? Game._anyCapturesAvailable(s.turn) : false;
+      if (mustCapture) {
+        // Destaca peças que podem capturar
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+          const p = s.board[r][c];
+          if (p && p.player === s.turn) {
+            const caps = Game._capturesFrom ? Game._capturesFrom(r, c) : [];
+            if (caps.length > 0) {
+              const cell = this.els.board.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+              if (cell) cell.classList.add('mandatory-capture');
+            }
+          }
+        }
+      }
+    }
   },
 
   renderAchievements(state) {
