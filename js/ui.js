@@ -98,63 +98,7 @@ const UI = {
     const move = result.move;
     if (!move) return;
 
-    // Se é captura multi-passos (dama ou sequência), anima passando por cima com clone físico
-    if (move.path && move.path.length > 1) {
-      const boardEl = this.els.board;
-      const pieceEl = boardEl?.querySelector(`[data-r="${move.from.r}"][data-c="${move.from.c}"] .piece`);
-      if (pieceEl) {
-        // Cria clone físico que percorre o path passo a passo
-        const clone = pieceEl.cloneNode(true);
-        clone.classList.remove('queen-move');
-        clone.classList.add('moving-clone');
-        clone.style.position = 'fixed';
-        clone.style.pointerEvents = 'none';
-        clone.style.zIndex = '100';
-        const rect = pieceEl.getBoundingClientRect();
-        clone.style.left = rect.left + 'px';
-        clone.style.top = rect.top + 'px';
-        clone.style.width = rect.width + 'px';
-        clone.style.height = rect.height + 'px';
-        document.body.appendChild(clone);
-
-        Audio.play('move');
-        // Esconde peça original para não reaparecer enquanto clone se move
-        pieceEl.style.opacity = '0';
-        // Percorre o path (cada passo do movimento)
-        const pathSteps = move.path || [{from: move.from, to: move.to}];
-        pathSteps.forEach((step, idx) => {
-          setTimeout(() => {
-            const targetCell = boardEl?.querySelector(`[data-r="${step.to.r}"][data-c="${step.to.c}"]`);
-            if (targetCell) {
-              const tRect = targetCell.getBoundingClientRect();
-              clone.style.transition = 'left 0.35s ease-in-out, top 0.35s ease-in-out';
-              clone.style.left = tRect.left + 'px';
-              clone.style.top = tRect.top + 'px';
-            }
-          }, idx * 220);
-        });
-
-        // Finaliza após todos os passos — restaura opacidade antes de renderizar
-        setTimeout(() => {
-          clone.remove();
-          pieceEl.style.opacity = '1';
-          if (move.captured) {
-            const capCell = boardEl?.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
-            const capPiece = capCell?.querySelector('.piece');
-            if (capPiece) {
-              capPiece.classList.add('capturing');
-              Audio.play('capture');
-              setTimeout(() => this._applyAndContinue(result), 480);
-              return;
-            }
-          }
-          this._applyAndContinue(result);
-        }, pathSteps.length * 220 + 120);
-        return;
-      }
-    }
-
-    // Animação de captura (simples)
+    // Captura: peça capturada explodir; movimento simples
     if (move.captured) {
       const capCell = this.els.board.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
       const capPiece = capCell?.querySelector('.piece');

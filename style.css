@@ -229,6 +229,19 @@ h1, h2, h3, .brand-name, .turn-badge, .glass-btn, .ach-title, .score-item, .moda
   box-shadow: 0 0 30px rgba(0,255,170,0.8), 0 0 60px var(--cyan-glow);
 }
 
+.capturing {
+  animation: explode 0.55s ease-out forwards;
+  z-index: 20;
+}
+@keyframes explode {
+  0%   { transform: scale(1); opacity: 1; filter: brightness(1); }
+  20%  { transform: scale(1.3) rotate(8deg); opacity: 1; filter: brightness(1.5); box-shadow: 0 0 30px var(--danger), 0 0 60px var(--danger); }
+  40%  { transform: scale(0.9) rotate(-5deg); opacity: 0.9; filter: brightness(1.8); }
+  60%  { transform: scale(1.5) rotate(12deg); opacity: 0.5; filter: brightness(2); box-shadow: 0 0 50px var(--danger), 0 0 80px var(--danger); }
+  80%  { transform: scale(0.4) rotate(-8deg); opacity: 0.15; filter: brightness(2.5); }
+  100% { transform: scale(0) rotate(0deg); opacity: 0; filter: brightness(3); }
+}
+
 .piece::before {
   content: '';
   width: 60%; height: 60%;
