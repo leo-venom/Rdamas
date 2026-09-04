@@ -199,7 +199,7 @@ const UI = {
     allCells.forEach(c => c.classList.remove('mandatory-capture'));
     // Se há captura obrigatória no turno atual
     if (s.turn) {
-      const mustCapture = Game._anyCapturesAvailable ? Game._anyCapturesAvailable(s.turn) : false;
+      const mustCapture = Game.hasMandatoryCapture ? Game.hasMandatoryCapture(s.turn) : false;
       if (mustCapture) {
         // Destaca peças que podem capturar
         for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {

@@ -45,6 +45,11 @@ const Game = {
     return this.state.mode === 'ai' && this.state.turn === this.MAGENTA && !this.state.winner;
   },
 
+  // Método público para verificar captura obrigatória (usado pelo UI)
+  hasMandatoryCapture(player) {
+    return this._anyCapturesAvailable(player);
+  },
+
   // Clicou numa peça do jogador atual
   select(r, c) {
     const s = this.state;
