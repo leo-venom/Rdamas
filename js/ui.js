@@ -100,14 +100,16 @@ const UI = {
 
     // Captura: peça capturada explodir; movimento simples
     if (move.captured) {
-      const capCell = this.els.board.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
+      const capCell = this.els.board?.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
       const capPiece = capCell?.querySelector('.piece');
+      Audio.play('capture');
       if (capPiece) {
         capPiece.classList.add('capturing');
-        Audio.play('capture');
         setTimeout(() => this._applyAndContinue(result), 480);
-        return;
+      } else {
+        this._applyAndContinue(result);
       }
+      return;
     }
     Audio.play(result.kinged ? 'king' : 'move');
     this._applyAndContinue(result);
