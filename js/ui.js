@@ -97,7 +97,32 @@ const UI = {
     if (!result) return;
     const move = result.move;
     if (!move) return;
-    // Animação de captura
+
+    // Se é captura multi-passos (dama ou sequência), anima passando por cima
+    if (move.path && move.path.length > 1) {
+      const boardEl = this.els.board;
+      const pieceEl = boardEl?.querySelector(`[data-r="${move.from.r}"][data-c="${move.from.c}"] .piece`);
+      if (pieceEl) {
+        pieceEl.classList.add('queen-move');
+        Audio.play('move');
+        setTimeout(() => {
+          if (move.captured) {
+            const capCell = boardEl?.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
+            const capPiece = capCell?.querySelector('.piece');
+            if (capPiece) {
+              capPiece.classList.add('capturing');
+              Audio.play('capture');
+              setTimeout(() => this._applyAndContinue(result), 480);
+              return;
+            }
+          }
+          this._applyAndContinue(result);
+        }, 300);
+        return;
+      }
+    }
+
+    // Animação de captura (simples)
     if (move.captured) {
       const capCell = this.els.board.querySelector(`[data-r="${move.captured.r}"][data-c="${move.captured.c}"]`);
       const capPiece = capCell?.querySelector('.piece');
