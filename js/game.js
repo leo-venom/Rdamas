@@ -75,7 +75,7 @@ const Game = {
     if (s.selected) {
       const move = s.validMoves.find(m => m.to.r === r && m.to.c === c);
       if (move) {
-        return { type: 'move', move: this._executeMove(move) };
+        const result = this._executeMove(move); result.move = move; return { type: 'move', move: move, result: result };
       }
     }
 
